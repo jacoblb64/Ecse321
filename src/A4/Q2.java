@@ -50,11 +50,23 @@ public class Q2 {
 		
 		Integer[] unpairednums = findUnpairedNumbers(testnums);
 		
-		System.out.println(printIntegerArray(unpairednums));
+		printIntegerArray(unpairednums);
+		
+		Integer[] input = 	new Integer[10000];
+		Integer[] correct = new Integer[10000];
+		
+		for (int i = 0; i < 10000; i++) {
+			input[i] = i;
+			correct[i] = i;
+		}
+		
+		Q2.printIntegerArray(input);
+		Q2.printIntegerArray(correct);
+		Q2.printIntegerArray(Q2.findUnpairedNumbers(input));
 	}
 	
 	/**
-	 * Method to convert an Integer array to a string for printing
+	 * Method to print an Integer Array
 	 * Used in testing
 	 * 
 	 * @param array Integer array to be converted
@@ -62,7 +74,7 @@ public class Q2 {
 	 * 
 	 * @throws IllegalArgumentException When the input is null
 	 */
-	public static String printIntegerArray(Integer[] array) throws IllegalArgumentException {
+	public static void printIntegerArray(Integer[] array) throws IllegalArgumentException {
 		if (array == null)
 			throw new IllegalArgumentException();
 		String result = "";
@@ -70,6 +82,6 @@ public class Q2 {
 			result += next + ", ";
 		}
 		result = result.substring(0, result.length() - 2);
-		return result;
+		System.out.println(result);
 	}
 }
