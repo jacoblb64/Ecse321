@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Computation" default="all" basedir=".">
+
+	<!-- Property Variable Names -->
+	<property name="dir.dist" value="${basedir}/dist"/>
+	<property name="dir.src" value="${basedir}/src"/>
+	<property name="dir.conf" value="${basedir}/src/conf"/>
+	<property name="dir.test" value="${basedir}/junit"/>
+	<property name="dir.build" value="${basedir}/bin"/>
+	<property name="dir.temp" value="${dir.build}/temp"/>
+
+	<property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+
+	<!-- Specification said to be able to be placed in the source folder and run,
+		 however, this requires Junit to be installed. This is the default
+		 installation location if installed via eclipse. This location could also
+		 be changed to the /lib folder, however this would not have met the
+		 assignment specification. -->
+	<path id="JUnit 4.libraryclasspath">
+        <pathelement location="../../../../../.p2/pool/plugins/org.junit_4.12.0.v201504281640/junit.jar"/>
+        <pathelement location="../../../../../.p2/pool/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+    </path>
+
+    <path id="Computation.classpath">
+        <pathelement location="bin"/>
+        <path refid="JUnit 4.libraryclasspath"/>
+    </path>
+
+	<!-- Created on own -->
+	<target name="clean" description="Clean build directory">
+		<echo message="Cleaning!"/>
+		<delete dir="${dir.build}"/>
+		<delete dir="${dir.dist}"/>
+	</target>
+
+	<!-- Created on own -->
+	<target name="init" depends="clean" description="Initialize Project">
+		<echo message="Initializing!"/>
+		<delete dir="${dir.temp}"/>		
+		<mkdir dir="${dir.dist}"/>		
+		<mkdir dir="${dir.build}"/>
+		<mkdir dir="${dir.temp}"/>		
+		<tstamp>
+			<format property="build.timestamp" pattern="yyyy-MM-dd'T'HH:mm:ss" />
+		</tstamp>
+		<echoproperties destfile="${dir.temp}/build.properties"/>
+	</target>
+
+	<!-- Created on own, with aid of eclipse -->
+	<target name="build" depends="init">
+		<echo message="Building!"/>
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" destdir="${dir.build}" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <src path="test"/>
+            <classpath refid="Computation.classpath"/>
+        </javac>
+    </target>
+
+	<!-- Created on own, with aid of eclipse -->
+	<target name="test">
+		<echo message="Testing!"/>
+        <mkdir dir="${dir.test}"/>
+        <junit fork="yes" printsummary="withOutAndErr">
+            <formatter type="xml"/>
+            <test name="computation.AllTests" todir="${dir.test}"/>
+            <test name="computation.ComputationTestAddSubstract" todir="${dir.test}"/>
+            <test name="computation.ComputationTestDivideMultiply" todir="${dir.test}"/>
+            <classpath refid="Computation.classpath"/>
+        </junit>
+    </target>
+
+	<!-- Created by eclipse -->
+    <target name="junitreport" depends="test">
+    	<echo message="Generating Test Report!"/>
+        <junitreport todir="${dir.test}">
+            <fileset dir="${dir.test}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${dir.test}"/>
+        </junitreport>
+    </target>
+
+	<!-- Created on own -->
+	<target name="cleaneverything" depends="clean">
+		<echo message="Cleaning Everything!"/>
+		<delete dir="${dir.test}" />
+		<delete dir="${basedir}/junit" />
+	</target>
+
+	<!-- Created on own -->
+	<target name="exportjar" depends="build">
+		<echo message="Creating Jar!"/>
+		<delete file="${dir.dist}/Computation.jar" />
+		<jar jarfile="${dir.dist}/Computation.jar"
+			 includes="*.class"
+			 basedir="${dir.build}"
+			 excludes="${dir.test}/$*.class"/>
+	</target>
+
+	<!-- Created by eclipse -->
+	<target name="Computation" depends="build">
+		<echo message="Running!"/>
+        <java classname="application.CompApp" failonerror="true" fork="yes">
+            <classpath refid="Computation.classpath"/>
+        </java>
+    </target>
+
+	<target name="all" depends="exportjar, junitreport, Computation"/>
+</project>
